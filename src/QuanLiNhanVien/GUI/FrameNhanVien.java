@@ -256,7 +256,7 @@ public class FrameNhanVien extends JFrame implements ActionListener, ListSelecti
         }
         else if(temp.getLabel().equals("Xóa")){
             try {
-                BLQuanLiNhanVien.findStaff(txtMaNv.getText());
+                BLQuanLiNhanVien.removeStaff(txtMaNv.getText());
                 model = new MyModel(BLQuanLiNhanVien.showDsNv(),columnNames);
             } catch (SQLException ex) {
                 Logger.getLogger(FrameNhanVien.class.getName()).log(Level.SEVERE, null, ex);

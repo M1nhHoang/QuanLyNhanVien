@@ -14,7 +14,7 @@ import java.util.Hashtable;
  * @author HP
  */
 public class pdQuanLiNhanVien {
-    private DataConnection d;
+    private SQLSEVERDataAccess d;
     private ResultSet rs;
     private String sqlSelect = "select * from nhanVien";
     private String sqlInsert = "insert into nhanVien values (?, ?, ?, ?, ?, ?, ?)";
@@ -24,15 +24,14 @@ public class pdQuanLiNhanVien {
     private DateFormat df;
     private Hashtable<String, NhanVien> list;
     
-    public pdQuanLiNhanVien(){
-        d = new DataConnection();
+    public pdQuanLiNhanVien() throws SQLException{
+        d = new SQLSEVERDataAccess();
         df = new SimpleDateFormat("dd/MM/yyyy");
         list = new Hashtable<String, NhanVien>();
     }
     
     public Hashtable<String, NhanVien> getDanhSachNhanVien() throws SQLException{
-        d.openConnection();
-        rs = d.executeQuery(sqlSelect);
+        rs = d.getResultSet_StoredProcedures("psGetNhanVien", null);
         list.clear();
         
         while (rs.next()) {
@@ -54,57 +53,25 @@ public class pdQuanLiNhanVien {
             }
             list.put(maNv, nv);
         }
-        d.closeConnection();
-        
         return list;
     }
     
     public void addStaff(NhanVien nv) throws SQLException{
-        d.openConnection();
-        Connection conn = d.getConn();
-        PreparedStatement stmt = conn.prepareStatement(sqlInsert);
-        stmt.setInt(1, (nv instanceof NhanVienHopDong)?1:2);
-        stmt.setString(2, nv.getHoTen());
-        stmt.setDate(3, new Date(nv.getNgaySinh().getTime()));
-        stmt.setString(4, nv.getGioiTinh());
-        stmt.setDate(5, new Date(nv.getNgayVaoCoQuan().getTime()));
-        stmt.setString(6, nv.getSoCM());
-        stmt.setDouble(7, (nv instanceof NhanVienHopDong)?((NhanVienHopDong)nv).getMucLuong():((NhanVienBienChe)nv).getHeSoLuong());
-        stmt.execute();
-        d.closeConnection();
+        d.Execute_StoredProcedures("psThemNhanVien", new Object[]{(nv instanceof NhanVienHopDong)?1:2, nv.getHoTen(), nv.getNgaySinh(), nv.getGioiTinh(), nv.getNgayVaoCoQuan(), 
+nv.getSoCM(), (nv instanceof NhanVienHopDong)?((NhanVienHopDong)nv).getMucLuong():((NhanVienBienChe)nv).getHeSoLuong()});
     }
     
     public void editStaff(NhanVien nv) throws SQLException{
-        d.openConnection();
-        Connection conn = d.getConn();
-        PreparedStatement stmt = conn.prepareStatement(sqlUpdate);
-        stmt.setInt(1, (nv instanceof NhanVienHopDong)?1:2);
-        stmt.setString(2, nv.getHoTen());
-        stmt.setDate(3, new Date(nv.getNgaySinh().getTime()));
-        stmt.setString(4, nv.getGioiTinh());
-        stmt.setDate(5, new Date(nv.getNgayVaoCoQuan().getTime()));
-        stmt.setString(6, nv.getSoCM());
-        stmt.setDouble(7, (nv instanceof NhanVienHopDong)?((NhanVienHopDong)nv).getMucLuong():((NhanVienBienChe)nv).getHeSoLuong());
-        stmt.setInt(8, Integer.parseInt(nv.getMaNV()));
-        stmt.execute();
-        d.closeConnection();
+        d.Execute_StoredProcedures("psSuaNhanVien", new Object[]{(nv instanceof NhanVienHopDong)?1:2, nv.getMaNV(), nv.getHoTen(), nv.getNgaySinh(), nv.getGioiTinh(), nv.getNgayVaoCoQuan(), 
+nv.getSoCM(), (nv instanceof NhanVienHopDong)?((NhanVienHopDong)nv).getMucLuong():((NhanVienBienChe)nv).getHeSoLuong()});
     }
     
     public void removeStaff(String maNV) throws SQLException{
-        d.openConnection();
-        Connection conn = d.getConn();
-        PreparedStatement stmt = conn.prepareStatement(sqlRemove);
-        stmt.setInt(1, Integer.parseInt(maNV));
-        stmt.execute();
-        d.closeConnection();
+        d.Execute_StoredProcedures("psXoaNhanVien", new Object[]{maNV});
     }
     
     public Hashtable<String, NhanVien> findStaff(String tenNV) throws SQLException{
-        d.openConnection();
-        Connection conn = d.getConn();
-        PreparedStatement stmt = conn.prepareStatement(sqlFind);
-        stmt.setString(1, tenNV+"%");
-        rs = stmt.executeQuery();
+        rs = d.getResultSet_StoredProcedures("psTimKiemNhanVien", new Object[]{tenNV});
         list.clear();
         
         while (rs.next()) {
@@ -126,8 +93,6 @@ public class pdQuanLiNhanVien {
             }
             list.put(maNv, nv);
         }
-        d.closeConnection();
-        System.out.println(list);
         return list;
     }
 }
