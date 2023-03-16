@@ -8,49 +8,45 @@ import QuanLiNhanVien.BusinessLogic.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.sql.SQLException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.text.ParseException;
 import javax.swing.*;
 import javax.swing.event.*;
 
 /**
  *
- * @author HP
+ * @author HP ActionListener, ListSelectionListener, ItemListener
  */
-public class FrameNhanVien extends JFrame implements ActionListener, ListSelectionListener, ItemListener {
-    private Label lbMaNv;
-    private Label lbHoten;
-    private Label lbGioiTinh;
-    private Label lbNgaySinh;
-    private Label lbSoCM;
-    private Label lbNgayVaoCoQuan;
-    private Label lbHeSoLuong;
-    private Label lbMucLuong;
-    private Label lbAnhNhanVien;
-    private TextField txtMaNv;
-    private TextField txtHoTen;
-    private TextField txtNgaySinh;
-    private TextField txtSoCm;
-    private TextField txtNgayVaoCoQuan;
-    private TextField txtHeSoLuong;
-    private TextField txtMucLuong;
-    private Checkbox ckNhanVienBienChe;
-    private Checkbox ckNhanVienHopDong;
-    private Checkbox ckNam;
-    private Checkbox ckNu;
-    private CheckboxGroup gGioiTinh;
-    private CheckboxGroup gLoaiNv;
-    private Button btAddStaff;
-    private Button btRemoveStaff;
-    private Button btEditStaff;
-    private Button btFindStaff;
-    private JScrollPane scrPane;
-    private JTable table;
-    private blQuanLiNhanVien BLQuanLiNhanVien;
-    private MyModel model;
-    private String[] columnNames = {"MaNV",
+public class FrameNhanVien extends JFrame implements ListSelectionListener, ActionListener{
+    public Label lbMaNv;
+    public Label lbHoten;
+    public Label lbGioiTinh;
+    public Label lbNgaySinh;
+    public Label lbSoCM;
+    public Label lbNgayVaoCoQuan;
+    public Label lbHeSoLuong;
+    public Label lbMucLuong;
+    public Label lbAnhNhanVien;
+    public Label lbLoaiNhanVien;
+    public TextField txtMaNv;
+    public TextField txtHoTen;
+    public TextField txtNgaySinh;
+    public TextField txtSoCm;
+    public TextField txtNgayVaoCoQuan;
+    public TextField txtHeSoLuong;
+    public TextField txtMucLuong;
+    public Checkbox ckNhanVienBienChe;
+    public Checkbox ckNhanVienHopDong;
+    public Checkbox ckNam;
+    public Checkbox ckNu;
+    public CheckboxGroup gGioiTinh;
+    public CheckboxGroup gLoaiNv;
+    public Button btAddStaff;
+    public Button btRemoveStaff;
+    public Button btEditStaff;
+    public Button btFindStaff;
+    public JScrollPane scrPane;
+    public JTable table;
+    public String[] columnNames = {"MaNV",
                             "Họ tên",
                             "Giới Tính",
                             "Ngày Sinh",
@@ -59,6 +55,8 @@ public class FrameNhanVien extends JFrame implements ActionListener, ListSelecti
                             "Loại Nv",
                             "Lương",
                             "Thực Lĩnh"};
+    public Choice cobLoaiNhanVien;
+    public blQuanLiNhanVien bl;
     
     public FrameNhanVien() throws SQLException{
         this.setTitle("javaAdvance Chap 2");
@@ -81,6 +79,7 @@ public class FrameNhanVien extends JFrame implements ActionListener, ListSelecti
         lbHeSoLuong = new Label("Hệ Số Lương");
         lbMucLuong = new Label("Mức Lương");
         lbAnhNhanVien = new Label("Ảnh Nhân Viên");
+        lbLoaiNhanVien = new Label("Loại Nhân Viên");
         
         lbMaNv.setBounds(150, 30, 150, 30);
         lbHoten.setBounds(150, 60, 150, 30);
@@ -91,6 +90,7 @@ public class FrameNhanVien extends JFrame implements ActionListener, ListSelecti
         lbHeSoLuong.setBounds(50, 240, 100, 30);
         lbMucLuong.setBounds(350, 240,70, 30);
         lbAnhNhanVien.setBounds(30, 80, 150, 30);
+        lbLoaiNhanVien.setBounds(150, 210, 150, 30);
         
         add(lbMaNv);
         add(lbHoten);
@@ -101,6 +101,7 @@ public class FrameNhanVien extends JFrame implements ActionListener, ListSelecti
         add(lbHeSoLuong);
         add(lbMucLuong);
         add(lbAnhNhanVien);
+        add(lbLoaiNhanVien);
         
         //text Feild
         txtMaNv = new TextField();
@@ -128,21 +129,26 @@ public class FrameNhanVien extends JFrame implements ActionListener, ListSelecti
         add(txtNgayVaoCoQuan);
         add(txtHeSoLuong);
         add(txtMucLuong);
-        
         //CheckBox
-        //Group Nhan Vien
-        gLoaiNv = new CheckboxGroup();
-        ckNhanVienBienChe = new Checkbox("Nhân Viên Biên Chế", gLoaiNv, true);
-        ckNhanVienHopDong = new Checkbox("Nhân Viên Hợp Đồng", gLoaiNv, false);
+        //Combobox loai nhan vien
+        cobLoaiNhanVien = new Choice();
+        cobLoaiNhanVien.addItemListener(new ItemListener(){
+            @Override
+            public void itemStateChanged(ItemEvent e){
+                if (cobLoaiNhanVien.getSelectedItem().equals("Nhân viên biên chế")){
+                    txtMucLuong.setEnabled(false);
+                    txtHeSoLuong.setEnabled(true);
+                }
+                else {
+                    txtMucLuong.setEnabled(true);
+                    txtHeSoLuong.setEnabled(false);
+                }
+            }
+        });
         
-        ckNhanVienBienChe.setBounds(150, 210, 150, 30);
-        ckNhanVienHopDong.setBounds(300, 210, 150, 30);
+        cobLoaiNhanVien.setBounds(330, 210, 150, 30);
         
-        ckNhanVienBienChe.addItemListener(this);
-        ckNhanVienHopDong.addItemListener(this);
-        
-        add(ckNhanVienBienChe);
-        add(ckNhanVienHopDong);
+        this.add(cobLoaiNhanVien);
         
         //Group Gioi Tính
         gGioiTinh = new CheckboxGroup();
@@ -157,14 +163,14 @@ public class FrameNhanVien extends JFrame implements ActionListener, ListSelecti
         
         // button
         btAddStaff = new Button("Thêm mới");
-        btEditStaff = new Button("Xóa");
-        btFindStaff = new Button("Sửa");
-        btRemoveStaff = new Button("Tìm");
+        btEditStaff = new Button("Sửa");
+        btFindStaff = new Button("Tìm");
+        btRemoveStaff = new Button("Xóa");
         
         btAddStaff.setBounds(40, 280, 90, 30);
         btEditStaff.setBounds(170, 280, 90, 30);
-        btFindStaff.setBounds(340, 280, 90, 30);
-        btRemoveStaff.setBounds(470, 280, 90, 30);
+        btFindStaff.setBounds(470, 280, 90, 30);
+        btRemoveStaff.setBounds(340, 280, 90, 30);
         
         btAddStaff.addActionListener(this);
         btEditStaff.addActionListener(this);
@@ -176,11 +182,8 @@ public class FrameNhanVien extends JFrame implements ActionListener, ListSelecti
         add(btFindStaff);
         add(btRemoveStaff);
         
-        BLQuanLiNhanVien = new blQuanLiNhanVien();
         // table
-        model = new MyModel(BLQuanLiNhanVien.showDsNv(),columnNames);
-        
-        table = new JTable(model);
+        table = new JTable();
         table.getSelectionModel().addListSelectionListener(this);
 
         
@@ -191,87 +194,43 @@ public class FrameNhanVien extends JFrame implements ActionListener, ListSelecti
         scrPane.setBounds(25, 350, 550, 200);
         
         add(scrPane);
-        table.setModel(model);
-    }
-    
-    public void checkInput(){
-        if (ckNhanVienBienChe.getState() == true){
-            txtMucLuong.setEnabled(false);
-            txtHeSoLuong.setEnabled(true);
-        }
-        else{
-            txtMucLuong.setEnabled(true);
-            txtHeSoLuong.setEnabled(false);
-        }
+        
+        // bl layer
+        bl = new blQuanLiNhanVien(this);
     }
     
     @Override
     public void actionPerformed(ActionEvent e) {
-        Button temp = (Button)e.getSource();
-        NhanVien nv = null;
-        DateFormat d = new SimpleDateFormat("dd/MM/yyyy");
-        if(temp.getLabel().equals("Thêm mới")){
-            if (ckNhanVienHopDong.getState()){
-                try {
-                    nv = new NhanVienHopDong(txtMaNv.getText(), txtHoTen.getText(),
-                            d.parse(txtNgayVaoCoQuan.getText()), (ckNam.getState())?"Nam":"Nữ", 
-                            txtSoCm.getText(), d.parse(txtNgaySinh.getText()), 
-                            Double.parseDouble(txtMucLuong.getText()));
-                }catch(Exception ex){}}
-            else 
-                try {
-                    nv = new NhanVienBienChe(txtMaNv.getText(), txtHoTen.getText(),
-                                d.parse(txtNgayVaoCoQuan.getText()), (ckNam.getState())?"Nam":"Nữ", 
-                                txtSoCm.getText(), d.parse(txtNgaySinh.getText()), 
-                                Double.parseDouble(txtHeSoLuong.getText()));
-                }catch(Exception ex){}
+        if(e.getSource() == btAddStaff){
             try {
-                BLQuanLiNhanVien.addStaff(nv);
-                model = new MyModel(BLQuanLiNhanVien.showDsNv(),columnNames);
-            } catch (SQLException ex) {
-                Logger.getLogger(FrameNhanVien.class.getName()).log(Level.SEVERE, null, ex);
+                bl.addStaff();
+            } catch (SQLException | ParseException ex) {
+                System.out.println(ex);
             }
         }
-        else if(temp.getLabel().equals("Sửa")){
-            if (ckNhanVienHopDong.getState()){
-                try {
-                    nv = new NhanVienHopDong(txtMaNv.getText(), txtHoTen.getText(),
-                            d.parse(txtNgayVaoCoQuan.getText()), (ckNam.getState())?"Nam":"Nữ", 
-                            txtSoCm.getText(), d.parse(txtNgaySinh.getText()), 
-                            Double.parseDouble(txtMucLuong.getText()));
-                }catch(Exception ex){}}
-            else 
-                try {
-                    nv = new NhanVienBienChe(txtMaNv.getText(), txtHoTen.getText(),
-                                d.parse(txtNgayVaoCoQuan.getText()), (ckNam.getState())?"Nam":"Nữ", 
-                                txtSoCm.getText(), d.parse(txtNgaySinh.getText()), 
-                                Double.parseDouble(txtHeSoLuong.getText()));
-                }catch(Exception ex){}
+        else if(e.getSource() == btEditStaff){
             try {
-                BLQuanLiNhanVien.editStaff(nv);
-                model = new MyModel(BLQuanLiNhanVien.showDsNv(),columnNames);
-            } catch (SQLException ex) {
-                Logger.getLogger(FrameNhanVien.class.getName()).log(Level.SEVERE, null, ex);
+                bl.editStaff();
+            } catch (SQLException | ParseException ex) {
+                System.out.println(ex);
             }
         }
-        else if(temp.getLabel().equals("Xóa")){
+        else if(e.getSource() == btFindStaff){
             try {
-                BLQuanLiNhanVien.removeStaff(txtMaNv.getText());
-                model = new MyModel(BLQuanLiNhanVien.showDsNv(),columnNames);
+                bl.findStaff();
             } catch (SQLException ex) {
-                Logger.getLogger(FrameNhanVien.class.getName()).log(Level.SEVERE, null, ex);
+                System.out.println(ex);
             }
         }
-        else if(temp.getLabel().equals("Tìm")){
+        else if(e.getSource() == btRemoveStaff){
             try {
-                model = new MyModel(BLQuanLiNhanVien.findStaff(txtHoTen.getText()),columnNames);
+                bl.removeStaff();
             } catch (SQLException ex) {
-                Logger.getLogger(FrameNhanVien.class.getName()).log(Level.SEVERE, null, ex);
+                System.out.println(ex);
             }
         }
-        table.setModel(model);
     }
-
+//
     @Override
     public void valueChanged(ListSelectionEvent e) {
         if (table.getSelectedRow() != -1) {
@@ -284,22 +243,19 @@ public class FrameNhanVien extends JFrame implements ActionListener, ListSelecti
             txtNgaySinh.setText(table.getValueAt(table.getSelectedRow(), 3).toString());
             txtSoCm.setText(table.getValueAt(table.getSelectedRow(), 4).toString());
             txtNgayVaoCoQuan.setText(table.getValueAt(table.getSelectedRow(), 5).toString());
-            if (table.getValueAt(table.getSelectedRow(), 6).toString().equals("Nhân Viên Biên Chế")){
-                ckNhanVienBienChe.setState(true);
+            cobLoaiNhanVien.select(table.getValueAt(table.getSelectedRow(), 6).toString());
+            if (table.getValueAt(table.getSelectedRow(), 6).toString().equals("Nhân viên biên chế")){
                 txtHeSoLuong.setText(table.getValueAt(table.getSelectedRow(), 7).toString());
                 txtMucLuong.setText("");
+                txtMucLuong.setEnabled(false);
+                txtHeSoLuong.setEnabled(true);
             }
             else{
-                ckNhanVienHopDong.setState(true);
-                txtHeSoLuong.setText("");
                 txtMucLuong.setText(table.getValueAt(table.getSelectedRow(), 7).toString());
+                txtHeSoLuong.setText("");
+                txtMucLuong.setEnabled(true);
+                txtHeSoLuong.setEnabled(false);
             }
-            checkInput();
         }
-    }
-
-    @Override
-    public void itemStateChanged(ItemEvent e) {
-        checkInput();
     }
 }

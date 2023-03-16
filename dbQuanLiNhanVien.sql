@@ -47,4 +47,4 @@ update nhanVien
 set tenNV = '11123'
 where maNv = 11
 delete from nhanVien where maNv = 11
-select * from nhanVien
+select * from loaiNhanVien

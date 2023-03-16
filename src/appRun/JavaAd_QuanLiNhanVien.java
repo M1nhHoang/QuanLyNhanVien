@@ -1,10 +1,7 @@
-package QuanLiNhanVien.GUI;
-
-
+package appRun;
 
 import QuanLiNhanVien.BusinessLogic.blQuanLiNhanVien;
 import QuanLiNhanVien.GUI.FrameNhanVien;
-import QuanLiNhanVien.ProcessData.pdQuanLiNhanVien;
 import java.sql.SQLException;
 
 /*

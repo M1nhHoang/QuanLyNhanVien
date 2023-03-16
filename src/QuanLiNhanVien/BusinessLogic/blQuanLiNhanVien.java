@@ -4,9 +4,13 @@
  */
 package QuanLiNhanVien.BusinessLogic;
 
+import appRun.*;
 import QuanLiNhanVien.ProcessData.pdQuanLiNhanVien;
 import QuanLiNhanVien.GUI.*;
 import java.sql.SQLException;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Hashtable;
 
 /**
@@ -15,40 +19,77 @@ import java.util.Hashtable;
  */
 public class blQuanLiNhanVien{
     private Hashtable<String, NhanVien> dsNhanVien;
+    private FrameNhanVien frame;
     private pdQuanLiNhanVien pdQuanLiNhanVien;
+    private DateFormat d;
 
-    public blQuanLiNhanVien() {
+    public blQuanLiNhanVien(FrameNhanVien frm) throws SQLException {
         dsNhanVien = new Hashtable<String, NhanVien>();
         pdQuanLiNhanVien = new pdQuanLiNhanVien();
+        d = new SimpleDateFormat("dd/MM/yyyy");
+        frame = frm;
+        showTableDsNv();
+        LoadCobobox();
     }
     
-    public Hashtable<String, NhanVien> getDsNhanVien() {
-        return dsNhanVien;
-    }
-
-    public void setDsNhanVien(Hashtable<String, NhanVien> dsNhanVien) {
-        this.dsNhanVien = dsNhanVien;
-    }
-    
-    public Hashtable<String, NhanVien> showDsNv() throws SQLException{
+    public void showTableDsNv() throws SQLException{
+        // get dsnv
         dsNhanVien = pdQuanLiNhanVien.getDanhSachNhanVien();
-        return dsNhanVien;
+        // set model
+        MyModel model = new MyModel(dsNhanVien, frame.columnNames);
+        frame.table.setModel(model);
     }
     
-    public void addStaff(NhanVien nv) throws SQLException{
+    public void addStaff() throws SQLException, ParseException{
+        NhanVien nv = null;
+        if (frame.cobLoaiNhanVien.getSelectedItem().equals("Nhân viên biên chế")){
+            nv = new NhanVienHopDong(frame.txtMaNv.getText(), frame.txtHoTen.getText(),
+                            d.parse(frame.txtNgayVaoCoQuan.getText()), (frame.ckNam.getState())?"Nam":"Nữ", 
+                            frame.txtSoCm.getText(), d.parse(frame.txtNgaySinh.getText()), 
+                            Double.parseDouble(frame.txtHeSoLuong.getText()));
+        }
+        else {
+            nv = new NhanVienBienChe(frame.txtMaNv.getText(), frame.txtHoTen.getText(),
+                                d.parse(frame.txtNgayVaoCoQuan.getText()), (frame.ckNam.getState())?"Nam":"Nữ", 
+                                frame.txtSoCm.getText(), d.parse(frame.txtNgaySinh.getText()), 
+                                Double.parseDouble(frame.txtMucLuong.getText()));
+        }
         pdQuanLiNhanVien.addStaff(nv);
+        showTableDsNv();
     }
     
-    public void editStaff(NhanVien nv) throws SQLException{
+    public void editStaff() throws SQLException, ParseException{
+        NhanVien nv = null;
+        if (frame.cobLoaiNhanVien.getSelectedItem().equals("Nhân viên biên chế")){
+            nv = new NhanVienHopDong(frame.txtMaNv.getText(), frame.txtHoTen.getText(),
+                            d.parse(frame.txtNgayVaoCoQuan.getText()), (frame.ckNam.getState())?"Nam":"Nữ", 
+                            frame.txtSoCm.getText(), d.parse(frame.txtNgaySinh.getText()), 
+                            Double.parseDouble(frame.txtHeSoLuong.getText()));
+        }
+        else {
+            nv = new NhanVienBienChe(frame.txtMaNv.getText(), frame.txtHoTen.getText(),
+                                d.parse(frame.txtNgayVaoCoQuan.getText()), (frame.ckNam.getState())?"Nam":"Nữ", 
+                                frame.txtSoCm.getText(), d.parse(frame.txtNgaySinh.getText()), 
+                                Double.parseDouble(frame.txtMucLuong.getText()));
+        }
         pdQuanLiNhanVien.editStaff(nv);
+        showTableDsNv();
     }
     
-    public void removeStaff(String maNv) throws SQLException{
-        pdQuanLiNhanVien.removeStaff(maNv);
+    public void removeStaff() throws SQLException{
+        pdQuanLiNhanVien.removeStaff(frame.txtMaNv.getText());
+        showTableDsNv();
     }
     
-    public Hashtable<String, NhanVien> findStaff(String tenNv) throws SQLException{
-        dsNhanVien = pdQuanLiNhanVien.findStaff(tenNv);
-        return dsNhanVien;
+    public void findStaff() throws SQLException{
+        // set model
+        MyModel model = new MyModel(pdQuanLiNhanVien.findStaff(frame.txtHoTen.getText()), frame.columnNames);
+        frame.table.setModel(model);
+    }
+    
+    public void LoadCobobox() throws SQLException{
+        for(String loaiNv: pdQuanLiNhanVien.getDanhSachLoaiNhanVien().values()){
+            frame.cobLoaiNhanVien.addItem(loaiNv);
+        }
     }
 }

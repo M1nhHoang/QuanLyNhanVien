@@ -2,11 +2,11 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package QuanLiNhanVien.GUI;
+package QuanLiNhanVien.BusinessLogic;
 
-import QuanLiNhanVien.BusinessLogic.NhanVienHopDong;
-import QuanLiNhanVien.BusinessLogic.NhanVienBienChe;
-import QuanLiNhanVien.BusinessLogic.NhanVien;
+import appRun.NhanVienHopDong;
+import appRun.NhanVienBienChe;
+import appRun.NhanVien;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -51,7 +51,7 @@ public class MyModel extends AbstractTableModel{
             case 3: return d.format(nv.getNgaySinh());
             case 4: return nv.getSoCM();
             case 5: return d.format(nv.getNgayVaoCoQuan());
-            case 6: return (nv instanceof NhanVienBienChe)?"Nhân Viên Biên Chế":"Nhân Viên Hợp Đồng";
+            case 6: return (nv instanceof NhanVienBienChe)?"Nhân viên biên chế":"Nhân viên hợp đồng";
             case 7: return (nv instanceof NhanVienBienChe)?((NhanVienBienChe)nv).getHeSoLuong():((NhanVienHopDong)nv).getMucLuong();
             case 8: return nv.ThucLinh();
             default: return null;

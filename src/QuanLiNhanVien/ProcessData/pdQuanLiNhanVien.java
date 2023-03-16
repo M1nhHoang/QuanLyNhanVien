@@ -3,7 +3,9 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package QuanLiNhanVien.ProcessData;
-import QuanLiNhanVien.BusinessLogic.*;
+import appRun.NhanVienHopDong;
+import appRun.NhanVienBienChe;
+import appRun.NhanVien;
 import java.sql.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -55,6 +57,19 @@ public class pdQuanLiNhanVien {
         }
         return list;
     }
+    public Hashtable<Integer, String> getDanhSachLoaiNhanVien() throws SQLException{
+        Hashtable<Integer, String> list=new Hashtable<Integer, String>();
+        
+        rs = d.getResultSet("select * from loaiNhanVien");
+        list.clear();
+
+        while (rs.next()) {
+            int id = rs.getInt(1);
+            String tenloai = rs.getString(2);
+            list.put(id, tenloai);
+        }
+        return list;
+    }
     
     public void addStaff(NhanVien nv) throws SQLException{
         d.Execute_StoredProcedures("psThemNhanVien", new Object[]{(nv instanceof NhanVienHopDong)?1:2, nv.getHoTen(), nv.getNgaySinh(), nv.getGioiTinh(), nv.getNgayVaoCoQuan(), 
@@ -67,7 +82,7 @@ nv.getSoCM(), (nv instanceof NhanVienHopDong)?((NhanVienHopDong)nv).getMucLuong(
     }
     
     public void removeStaff(String maNV) throws SQLException{
-        d.Execute_StoredProcedures("psXoaNhanVien", new Object[]{maNV});
+        d.Execute_StoredProcedures("psXoaNhanVien", new Object[]{Integer.parseInt(maNV)});
     }
     
     public Hashtable<String, NhanVien> findStaff(String tenNV) throws SQLException{
