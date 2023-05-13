@@ -1,5 +1,5 @@
 # QuanLyNhanVien
-3 Layer/connect DataBase SqlServer
+java awt use 3 Layer/connect DataBase SqlServer
 # GUI
 ![image](https://user-images.githubusercontent.com/106025710/225656934-4b4437be-7858-4f7e-9cbd-ddb3fa403eea.png)
 # SQL
